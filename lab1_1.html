@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Калькулятор складу палива</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #e3f2fd;
+      color: #0d47a1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    form {
+      background: #ffffff;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+    label {
+      font-weight: 600;
+      margin-top: 10px;
+      display: block;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border: 1px solid #90caf9;
+      border-radius: 6px;
+      font-size: 16px;
+      background-color: #e3f2fd;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #1976d2;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1565c0;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h1>Калькулятор складу палива</h1>
+  <form id="fuelForm">
+    <label for="Hp">H<sup>P</sup>, %:</label>
+    <input type="number" step="0.01" id="Hp" required>
+
+    <label for="Cp">C<sup>P</sup>, %:</label>
+    <input type="number" step="0.01" id="Cp" required>
+
+    <label for="Sp">S<sup>P</sup>, %:</label>
+    <input type="number" step="0.01" id="Sp" required>
+
+    <label for="Np">N<sup>P</sup>, %:</label>
+    <input type="number" step="0.01" id="Np" required>
+
+    <label for="Op">O<sup>P</sup>, %:</label>
+    <input type="number" step="0.01" id="Op" required>
+
+    <label for="Wp">W<sup>P</sup>, %:</label>
+    <input type="number" step="0.01" id="Wp" required>
+
+    <label for="Ap">A<sup>P</sup>, %:</label>
+    <input type="number" step="0.01" id="Ap" required>
+
+    <button type="submit">Розрахувати</button>
+  </form>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    document.getElementById('fuelForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const Hp = parseFloat(document.getElementById('Hp').value);
+      const Cp = parseFloat(document.getElementById('Cp').value);
+      const Sp = parseFloat(document.getElementById('Sp').value);
+      const Np = parseFloat(document.getElementById('Np').value);
+      const Op = parseFloat(document.getElementById('Op').value);
+      const Wp = parseFloat(document.getElementById('Wp').value);
+      const Ap = parseFloat(document.getElementById('Ap').value);
+
+      const Kpc = 100 / (100 - Wp);
+      const Kpt = 100 / ((100 - Wp) - Ap);
+
+      const Hc = Hp * Kpc;
+      const Cc = Cp * Kpc;
+      const Sc = Sp * Kpc;
+      const Nc = Np * Kpc;
+      const Oc = Op * Kpc;
+      const Ac = Ap * Kpc;
+
+      const Ht = Hp * Kpt;
+      const Ct = Cp * Kpt;
+      const St = Sp * Kpt;
+      const Nt = Np * Kpt;
+      const Ot = Op * Kpt;
+
+      const Qi = 339 * Cp + 1030 * Hp - 108.8 * (Op - Sp) - 25 * Wp; 
+      const Q_MJ = Qi / 1000;
+
+      const Qc = (Q_MJ + 0.025 * Wp) * 100 / (100 - Wp);
+      const Qt = (Q_MJ + 0.025 * Wp) * 100 / (100 - Wp - Ap);
+
+      document.getElementById('result').innerHTML = `
+        <strong>Результати розрахунку:</strong><br><br>
+        <b>K<sup>PC</sup></b>: ${Kpc.toFixed(2)}<br>
+        <b>K<sup>PT</sup></b>: ${Kpt.toFixed(2)}<br><br>
+        <b>Суха маса (%):</b><br>
+        H<sup>C</sup>: ${Hc.toFixed(2)}, C<sup>C</sup>: ${Cc.toFixed(2)}, S<sup>C</sup>: ${Sc.toFixed(2)}, N<sup>C</sup>: ${Nc.toFixed(3)}, O<sup>C</sup>: ${Oc.toFixed(2)}, A<sup>C</sup>: ${Ac.toFixed(0)}<br><br>
+        <b>Горюча маса (%):</b><br>
+        H<sup>T</sup>: ${Ht.toFixed(2)}, C<sup>T</sup>: ${Ct.toFixed(2)}, S<sup>T</sup>: ${St.toFixed(2)}, N<sup>T</sup>: ${Nt.toFixed(3)}, O<sup>T</sup>: ${Ot.toFixed(2)}<br><br>
+        <b>Нижча теплота згоряння:</b><br>
+        Q<sub>H</sub><sup>P</sup>: ${Q_MJ.toFixed(4)} МДж/кг<br>
+        Q<sub>H</sub><sup>C</sup>: ${Qc.toFixed(2)} МДж/кг<br>
+        Q<sub>H</sub><sup>T</sup>: ${Qt.toFixed(2)} МДж/кг
+      `;
+    });
+  </script>
+</body>
+</html>

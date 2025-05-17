@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор перерахунку складу мазуту</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #e3f2fd;
+            color: #0d47a1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .container {
+            background: #ffffff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+            border: 2px solid #90caf9;
+        }
+        label {
+            font-weight: 600;
+            margin-top: 10px;
+            display: block;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #90caf9;
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: #e3f2fd;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #1976d2;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1565c0;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            border: 2px solid #90caf9;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Калькулятор перерахунку складу мазуту</h1>
+    <div class="container">
+        <label>Вуглець, %:</label>
+        <input type="number" id="carbon" step="0.01">
+        <label>Водень, %:</label>
+        <input type="number" id="hydrogen" step="0.01">
+        <label>Кисень, %:</label>
+        <input type="number" id="oxygen" step="0.01">
+        <label>Сірка, %:</label>
+        <input type="number" id="sulfur" step="0.01">
+        <label>Нижча теплота згоряння горючої маси, МДж/кг:</label>
+        <input type="number" id="lowerHeatCombustible" step="0.01">
+        <label>Вологість робочої маси, %:</label>
+        <input type="number" id="moisture" step="0.01">
+        <label>Зольність сухої маси, %:</label>
+        <input type="number" id="ashDry" step="0.01">
+        <label>Вміст ванадію, мг/кг:</label>
+        <input type="number" id="vanadium" step="0.01">
+
+        <button onclick="calculate()">Розрахувати</button>
+    </div>
+
+    <div id="result">
+        <strong>Результати</strong><br><br>
+        <b>Склад робочої маси мазуту:</b><br>
+        Вуглець: <span id="carbonResult"></span>%<br>
+        Водень: <span id="hydrogenResult"></span>%<br>
+        Кисень: <span id="oxygenResult"></span>%<br>
+        Сірка: <span id="sulfurResult"></span>%<br>
+        Вміст ванадію: <span id="vanadiumResult"></span> мг/кг<br><br>
+        <b>Нижча теплота згоряння робочої маси:</b><br>
+        Q<sub>і</sub><sup>р</sup>: <span id="lowerHeatResult"></span> МДж/кг
+    </div>
+
+    <script>
+        function calculate() {
+            const carbon = parseFloat(document.getElementById('carbon').value) || 0;
+            const hydrogen = parseFloat(document.getElementById('hydrogen').value) || 0;
+            const oxygen = parseFloat(document.getElementById('oxygen').value) || 0;
+            const sulfur = parseFloat(document.getElementById('sulfur').value) || 0;
+            const lowerHeatCombustible = parseFloat(document.getElementById('lowerHeatCombustible').value) || 0;
+            const moisture = parseFloat(document.getElementById('moisture').value) || 0;
+            const ashDry = parseFloat(document.getElementById('ashDry').value) || 0;
+            const vanadium = parseFloat(document.getElementById('vanadium').value) || 0;
+
+            const factor = (100 - moisture - ashDry) / 100;
+            const vanadiumFactor = (100 - moisture) / 100;
+
+            const carbonWorking = (carbon * factor).toFixed(2);
+            const hydrogenWorking = (hydrogen * factor).toFixed(2);
+            const oxygenWorking = (oxygen * factor).toFixed(2);
+            const sulfurWorking = (sulfur * factor).toFixed(2);
+            const vanadiumWorking = (vanadium * vanadiumFactor).toFixed(2);
+
+            const lowerHeatWorking = (lowerHeatCombustible * (100 - moisture - ashDry) / 100 - 0.025 * moisture).toFixed(2);
+            
+            document.getElementById('carbonResult').textContent = carbonWorking;
+            document.getElementById('hydrogenResult').textContent = hydrogenWorking;
+            document.getElementById('oxygenResult').textContent = oxygenWorking;
+            document.getElementById('sulfurResult').textContent = sulfurWorking;
+            document.getElementById('vanadiumResult').textContent = vanadiumWorking;
+            document.getElementById('lowerHeatResult').textContent = lowerHeatWorking;
+
+            document.getElementById('result').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
