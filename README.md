@@ -1,1 +1,0 @@
-# PW1TB-32_Didychenko_Victoria_Serhiivna
